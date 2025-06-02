@@ -1,7 +1,19 @@
 // Generated from EasyLanguage.g4 by ANTLR 4.12.0
 package com.erik.DavaiLang.model.parser;
 
-
+    import com.erik.DavaiLang.model.abstractsyntaxtree.AbstractCommand;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandAtribuicao;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandCall;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandDecisao;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandEscrita;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandLeitura;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.CommandReturn;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.EasyFunction;
+        import com.erik.DavaiLang.model.abstractsyntaxtree.EasyProgram;
+        import com.erik.DavaiLang.model.datastructures.EasySymbol;
+    	import com.erik.DavaiLang.model.datastructures.EasySymbolTable;
+    	import com.erik.DavaiLang.model.datastructures.EasyVariable;
+    	import com.erik.DavaiLang.model.exceptions.EasySemanticException;
     import java.util.ArrayList;
     import java.util.List;
     import java.util.Stack;

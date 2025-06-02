@@ -88,6 +88,10 @@ funcaoDecl
       blocoFun
       'fim' SC?
       {
+        // Se não encontrar comandos (ou se o token 'fim' não for lido corretamente), lance um erro:
+        if ($text == null || $text.trim().isEmpty()) {
+          throw new EasySemanticException("Esperado o token 'fim' para fechar a função " + currentFunction.getName());
+        }
         List<AbstractCommand> bodyCommands = stack.pop();
         System.out.println("DEBUG: Comandos armazenados na função -> " + bodyCommands);
         currentFunction.setBody(bodyCommands);
@@ -122,8 +126,15 @@ varDecl
     ;
 
 tipo
-    : 'inteiro' { _tipo = EasyVariable.NUMBER; }
-    | 'texto'   { _tipo = EasyVariable.TEXT; }
+    : t=ID {
+          if ($t.text.equals("inteiro")) {
+              _tipo = EasyVariable.NUMBER;
+          } else if ($t.text.equals("texto")) {
+              _tipo = EasyVariable.TEXT;
+          } else {
+              throw new EasySemanticException("Tipo inválido: " + $t.text + ". Tipos válidos: inteiro e texto.");
+          }
+      }
     ;
 
 blocoPrincipal

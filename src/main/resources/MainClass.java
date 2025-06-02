@@ -3,7 +3,7 @@ import java.util.*;
 public class MainClass {
   public static Scanner _key = new Scanner(System.in);
 
-  public static int fatorial(String n) {
+  public static int fatorial(int n) {
     if (n<=1) {
     return 1;
 } else {
@@ -13,7 +13,7 @@ public class MainClass {
   public static void main(String args[]){
     int  numero;
     int  resultado;
-    String  n;
+    int  n;
     System.out.println("Digite um número para calcular o fatorial: ");
     numero= _key.nextInt();
     resultado = fatorial(numero);

@@ -3,13 +3,16 @@ package com.erik.DavaiLang.controller;
 import com.erik.DavaiLang.controller.dto.ParseRequest;
 import com.erik.DavaiLang.controller.dto.ParseResponse;
 import com.erik.DavaiLang.model.exceptions.EasySemanticException;
+import com.erik.DavaiLang.model.parser.CustomErrorListener;
 import com.erik.DavaiLang.model.parser.EasyLanguageLexer;
 import com.erik.DavaiLang.model.parser.EasyLanguageParser;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,6 +62,14 @@ public class ParseController {
             EasyLanguageLexer lexer = new EasyLanguageLexer(CharStreams.fromString(request.getCode()));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             EasyLanguageParser parser = new EasyLanguageParser(tokens);
+
+            // Configura uma estratégia de erro mais rigorosa: aborta no primeiro erro.
+            parser.setErrorHandler(new BailErrorStrategy());
+
+            // Remove os listeners padrão e adiciona o seu customizado
+            parser.removeErrorListeners();
+            parser.addErrorListener(new CustomErrorListener());
+
 
             // 2. Inicia a regra principal
             parser.prog();  // se der erro de sintaxe/semântico, vai lançar exceção
