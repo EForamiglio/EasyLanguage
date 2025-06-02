@@ -1,0 +1,23 @@
+programa ExemploFatorial;
+// Declaração de função para cálculo de fatorial
+funcao fatorial(n: inteiro): inteiro
+inicio
+se n <= 1 entao
+retornar 1;
+senao
+retornar n * fatorial(n - 1);
+fimse
+fim
+
+// Programa principal
+inicio
+var numero: inteiro;
+var resultado: inteiro;
+escrever("Digite um número para calcular o fatorial: ");
+ler(numero);
+
+resultado = fatorial(numero);
+
+escrever("O fatorial de ", numero, " é ", resultado);
+
+fimprograma

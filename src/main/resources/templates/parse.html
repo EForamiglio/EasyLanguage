@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>EasyLanguage → Java Generator</title>
+
+  <style>
+    /* ===== Reset básico ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+        background-color: #f0f8f5; /* verde-pastel suave */
+        color: #333;
+        padding: 20px;
+    }
+
+    /* ===== Container geral ===== */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .flex-row {
+        display: flex;
+        gap: 20px;
+    }
+    .flex-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* ===== Cards ===== */
+    .card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+
+    /* ===== Seção de entrada ===== */
+    .input-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .input-area textarea {
+        flex: 1;
+        min-height: 300px;
+        resize: vertical;
+        padding: 10px;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
+        background-color: #fdfdfd;
+    }
+    .input-area button {
+        align-self: flex-end;
+        padding: 10px 20px;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+    }
+    .input-area button:hover {
+        background-color: #1e8449;
+    }
+
+    /* ===== Seções de saída ===== */
+    .output-area, .error-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .output-area pre, .error-area pre {
+        background-color: #f8f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        overflow: auto;
+        min-height: 200px;
+        font-family: Consolas, monospace;
+    }
+
+    /* Mensagem de sucesso ou erro */
+    .message {
+        padding: 10px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .message.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Botão copiar */
+    .copy-button {
+        align-self: flex-end;
+        padding: 5px 10px;
+        background-color: #2980b9;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+    }
+    .copy-button:hover {
+        background-color: #1c5980;
+    }
+
+    /* ===== Exemplo de código ===== */
+    .example-area {
+        margin-top: 20px;
+    }
+    .example-area pre {
+        background-color: #eef5f1;
+        border: 1px dashed #a2d5c6;
+        border-radius: 4px;
+        padding: 10px;
+        overflow: auto;
+        font-family: Consolas, monospace;
+        color: #2c3e50;
+    }
+
+    /* Responsividade simples */
+    @media (max-width: 900px) {
+        .flex-row {
+            flex-direction: column;
+        }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>EasyLanguage &rarr; Java Generator</h1>
+
+  <!-- ===== Linha principal ===== -->
+  <div class="flex-row">
+    <!-- Área de Input DSL -->
+    <div class="card input-area">
+      <label for="dslInput"><strong>Código em EasyLanguage:</strong></label>
+      <textarea id="dslInput" placeholder="Escreva seu código aqui..."></textarea>
+      <button id="parseBtn">Parse &rarr; Java</button>
+    </div>
+
+    <!-- Área de Output / Erro -->
+    <div class="flex-col" style="flex: 1;">
+      <!-- Mensagem de Erro / Sucesso -->
+      <div id="messageContainer"></div>
+
+      <!-- Java Gerado -->
+      <div class="card output-area">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+          <strong>Código Java Gerado:</strong>
+          <button id="copyBtn" class="copy-button">Copiar</button>
+        </div>
+        <pre id="javaOutput">// O Java gerado aparecerá aqui</pre>
+      </div>
+
+      <!-- Área de Erros (se houver) -->
+      <div class="card error-area">
+        <strong>Erros:</strong>
+        <pre id="errorOutput">–</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Exemplo de Código DSL ===== -->
+  <div class="example-area card">
+    <strong>Exemplo de EasyLanguage:</strong>
+    <pre th:text="${exemplo}">// Exemplo virá aqui</pre>
+  </div>
+</div>
+
+<!-- ===== JavaScript para chamar o endpoint /api/parse ===== -->
+<script>
+
+  document.getElementById('parseBtn').addEventListener('click', () => {
+      const code = document.getElementById('dslInput').value;
+      // Limpa mensagens anteriores
+      document.getElementById('messageContainer').innerHTML = "";
+      document.getElementById('javaOutput').textContent = "// O Java gerado aparecerá aqui";
+      document.getElementById('errorOutput').textContent = "–";
+
+      fetch('/api/parse', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code: code })
+      })
+      .then(resp => resp.json())
+      .then(data => {
+          if (data.errorMessage) {
+              // Mostra erro
+              const msgDiv = document.createElement('div');
+              msgDiv.className = 'message error';
+              msgDiv.textContent = data.errorMessage;
+              document.getElementById('messageContainer').appendChild(msgDiv);
+              document.getElementById('errorOutput').textContent = data.errorMessage;
+              document.getElementById('javaOutput').textContent = "";
+          } else {
+              // Mostra sucesso e o Java gerado
+              const msgDiv = document.createElement('div');
+              msgDiv.className = 'message success';
+              msgDiv.textContent = 'Parse bem-sucedido!';
+              document.getElementById('messageContainer').appendChild(msgDiv);
+              document.getElementById('javaOutput').textContent = data.javaCode;
+              document.getElementById('errorOutput').textContent = "";
+          }
+      })
+      .catch(err => {
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'message error';
+          msgDiv.textContent = 'Erro inesperado: ' + err;
+          document.getElementById('messageContainer').appendChild(msgDiv);
+      });
+  });
+
+  // Botão Copiar
+  document.getElementById('copyBtn').addEventListener('click', () => {
+      const javaText = document.getElementById('javaOutput').textContent;
+      if (!javaText) return;
+      navigator.clipboard.writeText(javaText)
+          .then(() => { alert('Código Java copiado para a área de transferência!'); })
+          .catch(e => { alert('Falha ao copiar: ' + e); });
+  });
+</script>
+</body>
+</html>
