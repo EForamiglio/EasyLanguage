@@ -20,7 +20,7 @@ public class MainService {
         try {
 
             /*
-                java -cp ./antlr-4.12.0-complete.jar org.antlr.v4.Tool EasyLanguage.g4 -package br.edu.cefsa.compiler.parser -o ../src/br/edu/cefsa/compiler/parser
+                java -cp ./antlr-4.12.0-complete.jar org.antlr.v4.Tool EasyLanguage.g4 -package com.erik.DavaiLang.g4Generate -o .
              */
             EasyLanguageLexer lexer;
             EasyLanguageParser parser;
